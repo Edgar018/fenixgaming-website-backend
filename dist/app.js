@@ -3,23 +3,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.pathOfTheRootProject = void 0;
 const express_1 = __importDefault(require("express"));
 const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
+const express_fileupload_1 = __importDefault(require("express-fileupload"));
+const path_1 = __importDefault(require("path"));
 const passport_1 = __importDefault(require("passport"));
 const passport_2 = __importDefault(require("./middlewares/passport"));
 const createRoles_1 = __importDefault(require("./libs/initialSetup/createRoles"));
 const createAdmin_1 = __importDefault(require("./libs/initialSetup/createAdmin"));
 const auth_routes_1 = __importDefault(require("./routes/userRoutes/auth.routes"));
 const special_routes_1 = __importDefault(require("./routes/specialUserRoutes/special.routes"));
+const replays_route_1 = __importDefault(require("./routes/replaysRoutes/replays.route"));
 const app = express_1.default();
 app.set("port", process.env.PORT || 3000);
 createRoles_1.default();
 createAdmin_1.default();
+const pathOfTheRootProject = __dirname;
+exports.pathOfTheRootProject = pathOfTheRootProject;
 app.use(morgan_1.default("dev"));
 app.use(cors_1.default());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.json());
+app.use(express_fileupload_1.default());
 app.use(passport_1.default.initialize());
 passport_1.default.use(passport_2.default);
 app.get("/", (req, res) => {
@@ -27,4 +34,6 @@ app.get("/", (req, res) => {
 });
 app.use(auth_routes_1.default);
 app.use(special_routes_1.default);
+app.use(replays_route_1.default);
+app.use(express_1.default.static(path_1.default.resolve("public/replays")));
 exports.default = app;
