@@ -14,7 +14,8 @@ const passport_2 = __importDefault(require("./middlewares/passport"));
 const createRoles_1 = __importDefault(require("./libs/initialSetup/createRoles"));
 const createAdmin_1 = __importDefault(require("./libs/initialSetup/createAdmin"));
 const auth_routes_1 = __importDefault(require("./routes/userRoutes/auth.routes"));
-const special_routes_1 = __importDefault(require("./routes/specialUserRoutes/special.routes"));
+const special_routes_1 = __importDefault(require("./routes/userRoutes/specialUserRoutes/special.routes"));
+const articles_special_routes_1 = __importDefault(require("./routes/articleRoutes/specialArticlesRoutes/articles.special.routes"));
 const replays_route_1 = __importDefault(require("./routes/replaysRoutes/replays.route"));
 const app = express_1.default();
 app.set("port", process.env.PORT || 3000);
@@ -35,5 +36,6 @@ app.get("/", (req, res) => {
 app.use(auth_routes_1.default);
 app.use(special_routes_1.default);
 app.use(replays_route_1.default);
-app.use(express_1.default.static(path_1.default.resolve("public/replays")));
+app.use(articles_special_routes_1.default);
+app.use(express_1.default.static(path_1.default.resolve("public")));
 exports.default = app;

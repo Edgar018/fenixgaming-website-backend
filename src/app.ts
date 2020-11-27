@@ -9,7 +9,8 @@ import createRoles from "./libs/initialSetup/createRoles";
 import createAdmin from "./libs/initialSetup/createAdmin";
 
 import authRoutes from "./routes/userRoutes/auth.routes";
-import specialRoutes from "./routes/specialUserRoutes/special.routes";
+import specialRoutes from "./routes/userRoutes/specialUserRoutes/special.routes";
+import specialRoutesArticles from "./routes/articleRoutes/specialArticlesRoutes/articles.special.routes";
 import replaysRouter from "./routes/replaysRoutes/replays.route";
 
 const app = express();
@@ -36,7 +37,8 @@ app.get("/", (req, res) => {
 app.use(authRoutes);
 app.use(specialRoutes);
 app.use(replaysRouter);
+app.use(specialRoutesArticles);
 
-app.use(express.static(path.resolve("public/replays")));
+app.use(express.static(path.resolve("public")));
 
 export default app;
