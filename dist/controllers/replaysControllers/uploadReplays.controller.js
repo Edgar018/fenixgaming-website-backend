@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const util_1 = __importDefault(require("util"));
+const replays_mode_1 = __importDefault(require("../../models/replays.mode"));
+const w3gjs_1 = require("../../libs/w3gjs/w3gjs");
 const app_1 = require("../../app");
 exports.default = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -38,9 +40,22 @@ exports.default = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const md5 = req.files.file.md5;
         const URL = "/public/replays/" + md5 + extension;
         yield util_1.default.promisify(req.files.file.mv)(app_1.pathOfTheRootProject + URL);
+        const replay = yield w3gjs_1.getDataOfReplay(app_1.pathOfTheRootProject + URL);
+        console.log(replay);
+        const newReplay = new replays_mode_1.default({
+            playerOne: replay.players[0],
+            playerTwo: replay.players[1],
+            matchup: replay.matchup,
+            chat: replay.chat,
+            version: replay.version,
+            duration: replay.duration,
+            path: md5
+        });
+        yield newReplay.save();
         res.status(201).json({ msg: "file upload successfully" });
     }
     catch (err) {
         console.log(err.message);
+        return res.status(500).json({ msg: "Internal Server Error" });
     }
 });

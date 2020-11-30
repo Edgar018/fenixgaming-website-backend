@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import path from "path";
 import util from "util";
+import Replay from "../../models/replays.mode";
+import { getDataOfReplay } from "../../libs/w3gjs/w3gjs";
 import { pathOfTheRootProject } from "../../app";
 
 export default async (req: Request, res: Response) => {
@@ -30,8 +32,23 @@ export default async (req: Request, res: Response) => {
 		const URL = "/public/replays/" + md5 + extension;
 		await util.promisify(req.files.file.mv)(pathOfTheRootProject + URL);
 
+		const replay = await getDataOfReplay(pathOfTheRootProject + URL);
+		console.log(replay);
+
+		const newReplay = new Replay({
+			playerOne: replay.players[0],
+			playerTwo: replay.players[1],
+			matchup: replay.matchup,
+			chat: replay.chat,
+			version: replay.version,
+      duration: replay.duration,
+			path: md5
+		});
+		await newReplay.save();
+
 		res.status(201).json({ msg: "file upload successfully" });
 	} catch (err) {
 		console.log(err.message);
+		return res.status(500).json({ msg: "Internal Server Error" });
 	}
 };
