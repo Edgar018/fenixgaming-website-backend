@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Express } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import fileUpload from "express-fileupload";
@@ -13,32 +13,44 @@ import specialRoutes from "./routes/userRoutes/specialUserRoutes/special.routes"
 import specialRoutesArticles from "./routes/articleRoutes/specialArticlesRoutes/articles.special.routes";
 import replaysRouter from "./routes/replaysRoutes/replays.route";
 
-const app = express();
-
-app.set("port", process.env.PORT || 3000);
-
-createRoles();
-createAdmin();
 const pathOfTheRootProject = __dirname;
 export { pathOfTheRootProject };
 
-app.use(morgan("dev"));
-app.use(cors());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(fileUpload());
-app.use(passport.initialize());
-passport.use(passportMiddleware);
+class App {
+	public app: Express = express();
 
-app.get("/", (req, res) => {
-	res.send(`THE API is at http://localhost:${app.get("port")}`);
-});
+	constructor(){
+		this.config();
+		this.initRoles();
+		this.initRoutes();
+	}
 
-app.use(authRoutes);
-app.use(specialRoutes);
-app.use(replaysRouter);
-app.use(specialRoutesArticles);
+	config(): void {
+		this.app.set("port", process.env.PORT || 3000);
+		this.app.use(morgan("dev"));
+		this.app.use(cors());
+		this.app.use(express.urlencoded({ extended: false }));
+		this.app.use(express.json());
+		this.app.use(fileUpload());
+		this.app.use(passport.initialize());
+		passport.use(passportMiddleware);
+		this.app.get("/", (req, res) => {
+			res.send(`THE API is at http://localhost:${this.app.get("port")}`);
+		});
+		this.app.use(express.static(path.resolve("public")));
+	}
 
-app.use(express.static(path.resolve("public")));
+	initRoles(): void {
+		createRoles();
+		createAdmin();
+	}
 
-export default app;
+	initRoutes(): void {
+		this.app.use(authRoutes);
+		this.app.use(specialRoutes);
+		this.app.use(replaysRouter);
+		this.app.use(specialRoutesArticles);
+	}
+}
+
+export default new App().app;
